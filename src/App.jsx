@@ -1,10 +1,7 @@
-// src/App.jsx
 import { useState } from 'react';
-
 import NewTaskForm from './components/NewTaskForm';
 import TaskList from './components/TaskList';
 import Footer from './components/Footer';
-
 import './index.css';
 
 // Начальные данные
@@ -29,7 +26,7 @@ const initialTaskData = [
   },
 ];
 
-// Генератор ID
+// Генератор ID (лучше вынести за пределы компонента, чтобы не сбрасывался)
 let nextId = 4;
 
 function App() {
@@ -37,6 +34,7 @@ function App() {
   const [filter, setFilter] = useState('all');
 
   // === CRUD-функции ===
+
   const addTask = (text) => {
     if (!text.trim()) return;
     const newTask = {
@@ -49,11 +47,19 @@ function App() {
   };
 
   const toggleTask = (id) => {
-    setTasks((currentTasks) => {
-      return currentTasks.map((task) =>
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task,
-      );
-    });
+      ),
+    );
+  };
+
+  const editTask = (id, newLabel) => {
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.id === id ? { ...task, label: newLabel } : task,
+      ),
+    );
   };
 
   const deleteTask = (id) => {
@@ -61,31 +67,38 @@ function App() {
   };
 
   const clearCompleted = () => {
-    setTasks(tasks.filter((task) => !task.completed));
+    setTasks((currentTasks) => currentTasks.filter((task) => !task.completed));
   };
 
   // === Фильтрация и подсчёт ===
+
   const filteredTasks = tasks.filter((task) => {
     if (filter === 'active') return !task.completed;
     if (filter === 'completed') return task.completed;
     return true;
   });
+
   const activeTasks = tasks.filter((task) => !task.completed).length;
 
   return (
     <section className="todoapp">
-      <NewTaskForm onTaskAdded={addTask} />{' '}
-      <TaskList
-        tasks={filteredTasks}
-        onTaskToggled={toggleTask}
-        onTaskDeleted={deleteTask}
-      />{' '}
-      <Footer
-        activeCount={activeTasks}
-        filter={filter}
-        onFilterChange={setFilter}
-        onClearCompleted={clearCompleted}
-      />{' '}
+      <header className="header">
+        <h1> todos </h1> <NewTaskForm onTaskAdded={addTask} />{' '}
+      </header>{' '}
+      <section className="main">
+        <TaskList
+          tasks={filteredTasks}
+          onTaskToggled={toggleTask}
+          onTaskDeleted={deleteTask}
+          onTaskEdited={editTask}
+        />{' '}
+        <Footer
+          activeCount={activeTasks}
+          filter={filter}
+          onFilterChange={setFilter}
+          onClearCompleted={clearCompleted}
+        />{' '}
+      </section>{' '}
     </section>
   );
 }
