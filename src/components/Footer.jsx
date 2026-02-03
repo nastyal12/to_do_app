@@ -1,21 +1,10 @@
-// ⚠️ Принимаем все пропсы, включая новые функции и состояние фильтра
+import React from 'react';
+import PropTypes from 'prop-types';
+import TasksFilter from './TasksFilter';
+
+// Добавляем filter в список принимаемых аргументов 👇
 function Footer({ activeCount, filter, onFilterChange, onClearCompleted }) {
   const itemText = activeCount === 1 ? 'item' : 'items';
-
-  // ⚠️ Создаем кнопки фильтра
-  const filterButtons = ['All', 'Active', 'Completed'].map((name) => {
-    const isSelected = name.toLowerCase() === filter;
-    return (
-      <li key={name}>
-        <button
-          className={isSelected ? 'selected' : ''}
-          onClick={() => onFilterChange(name.toLowerCase())}
-        >
-          {name}{' '}
-        </button>{' '}
-      </li>
-    );
-  });
 
   return (
     <footer className="footer">
@@ -23,14 +12,28 @@ function Footer({ activeCount, filter, onFilterChange, onClearCompleted }) {
         {' '}
         {activeCount} {itemText}
         left{' '}
-      </span>{' '}
-      <ul className="filters"> {filterButtons} </ul>{' '}
-      {/* ⚠️ Кнопка очистки завершенных */}{' '}
+      </span>
+      {/* Теперь эта переменная определена и передается дальше */}{' '}
+      <TasksFilter filter={filter} onFilterChange={onFilterChange} />
       <button className="clear-completed" onClick={onClearCompleted}>
         Clear completed{' '}
       </button>{' '}
     </footer>
   );
 }
+
+// Проверка типов (обязательно по заданию)
+Footer.propTypes = {
+  activeCount: PropTypes.number,
+  filter: PropTypes.string,
+  onFilterChange: PropTypes.func.isRequired,
+  onClearCompleted: PropTypes.func.isRequired,
+};
+
+// Значения по умолчанию
+Footer.defaultProps = {
+  activeCount: 0,
+  filter: 'all',
+};
 
 export default Footer;

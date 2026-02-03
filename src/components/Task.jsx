@@ -1,48 +1,46 @@
-// src/components/Task.jsx
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 
 function Task({
+  id,
   label,
   completed,
   dateCreated,
-  id,
   onTaskToggled,
   onTaskDeleted,
-  onTaskEdited,
+  onTaskEdited, // <-- Не забываем этот пропс!
 }) {
-  // 1. Состояние для режима редактирования (открыто/закрыто)
   const [isEditing, setIsEditing] = useState(false);
-  // 2. Состояние для текста, который мы редактируем
   const [editValue, setEditValue] = useState(label);
+  const [, setTick] = useState(0);
 
-  // 3. Класс для <li>
-  let className = completed ? 'completed' : '';
-  if (isEditing) {
-    className += ' editing'; // Добавляем класс 'editing'
-  }
+  // Автоматическое обновление времени каждую минуту
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick((t) => t + 1);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
-  // 4. Обработка нажатия Enter для сохранения
-  const handleEditSubmit = (event) => {
-    if (event.key === 'Enter') {
-      const newLabel = editValue.trim();
-
-      // Если текст не пустой, вызываем функцию обновления
-      if (newLabel) {
-        onTaskEdited(id, newLabel);
-      }
-      setIsEditing(false); // Выходим из режима редактирования
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onTaskEdited(id, editValue.trim());
+      setIsEditing(false);
+    }
+    if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditValue(label);
     }
   };
 
-  // 5. Обработка открытия режима редактирования
-  const handleEditClick = () => {
-    setIsEditing(true);
-    setEditValue(label); // Убедимся, что начальное значение равно текущему label
-  };
+  // Формируем классы: 'completed', 'editing' или оба
+  let classNames = '';
+  if (completed) classNames += 'completed';
+  if (isEditing) classNames += ' editing';
 
   return (
-    <li className={className}>
+    <li className={classNames}>
       <div className="view">
         <input
           className="toggle"
@@ -53,31 +51,48 @@ function Task({
         <label>
           <span className="description"> {label} </span>{' '}
           <span className="created">
-            {' '}
-            created {formatDistanceToNow(dateCreated, { addSuffix: true })}{' '}
+            created{' '}
+            {formatDistanceToNow(dateCreated, {
+              addSuffix: true,
+              includeSeconds: true,
+            })}{' '}
           </span>{' '}
         </label>{' '}
-        {/* 6. Клик по карандашу открывает редактирование */}{' '}
-        <button className="icon icon-edit" onClick={handleEditClick}>
+        {/* Кнопка теперь открывает режим редактирования */}{' '}
+        <button className="icon icon-edit" onClick={() => setIsEditing(true)}>
           {' '}
         </button>{' '}
         <button className="icon icon-destroy" onClick={() => onTaskDeleted(id)}>
           {' '}
         </button>{' '}
       </div>{' '}
-      {/* 7. Поле ввода, которое появляется только в режиме редактирования */}{' '}
       {isEditing && (
         <input
           type="text"
           className="edit"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
-          onKeyDown={handleEditSubmit}
-          autoFocus // Фокусируемся при открытии
+          onKeyDown={handleKeyDown}
+          onBlur={() => setIsEditing(false)}
+          autoFocus
         />
       )}{' '}
     </li>
   );
 }
+
+Task.propTypes = {
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  label: PropTypes.string.isRequired,
+  completed: PropTypes.bool,
+  dateCreated: PropTypes.instanceOf(Date).isRequired,
+  onTaskToggled: PropTypes.func.isRequired,
+  onTaskDeleted: PropTypes.func.isRequired,
+  onTaskEdited: PropTypes.func.isRequired, // <-- Добавили в проверку
+};
+
+Task.defaultProps = {
+  completed: false,
+};
 
 export default Task;

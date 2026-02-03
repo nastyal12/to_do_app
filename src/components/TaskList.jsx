@@ -1,9 +1,6 @@
-// src/components/TaskList.jsx
+import PropTypes from 'prop-types'; // <-- ЭТО ОБЯЗАТЕЛЬНО
 import Task from './Task';
 
-// src/components/TaskList.jsx
-
-// Принимаем onTaskEdited
 function TaskList({ tasks, onTaskToggled, onTaskDeleted, onTaskEdited }) {
   return (
     <section className="main">
@@ -18,12 +15,25 @@ function TaskList({ tasks, onTaskToggled, onTaskDeleted, onTaskEdited }) {
             dateCreated={task.dateCreated}
             onTaskToggled={onTaskToggled}
             onTaskDeleted={onTaskDeleted}
-            onTaskEdited={onTaskEdited} // <--- ДОБАВЛЕНО!
+            onTaskEdited={onTaskEdited}
           />
         ))}{' '}
       </ul>{' '}
     </section>
   );
 }
+
+// Проверка типов
+TaskList.propTypes = {
+  tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onTaskToggled: PropTypes.func.isRequired,
+  onTaskDeleted: PropTypes.func.isRequired,
+  onTaskEdited: PropTypes.func.isRequired, // Добавили проверку для редактирования
+};
+
+// Значения по умолчанию
+TaskList.defaultProps = {
+  tasks: [],
+};
 
 export default TaskList;

@@ -1,33 +1,33 @@
-// src/components/NewTaskForm.jsx
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 function NewTaskForm({ onTaskAdded }) {
   const [inputValue, setInputValue] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault(); // 👈 важно!
-
-      if (!inputValue.trim()) return; // 👈 защита от пустых строк
-
-      onTaskAdded(inputValue);
-      setInputValue('');
+      const text = inputValue.trim();
+      if (text) {
+        onTaskAdded(text);
+        setInputValue('');
+      }
     }
   };
 
   return (
-    <header className="header">
-      <h1> todos </h1>{' '}
-      <input
-        className="new-todo"
-        placeholder="What needs to be done?"
-        autoFocus
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleSubmit}
-      />{' '}
-    </header>
+    <input
+      className="new-todo"
+      placeholder="What needs to be done?"
+      autoFocus
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+      onKeyDown={handleKeyDown}
+    />
   );
 }
+
+NewTaskForm.propTypes = {
+  onTaskAdded: PropTypes.func.isRequired,
+};
 
 export default NewTaskForm;

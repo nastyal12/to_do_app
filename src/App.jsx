@@ -48,17 +48,15 @@ function App() {
   const toggleTask = (id) => {
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
     );
   };
 
   // 3. Редактирование
   const editTask = (id, newLabel) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, label: newLabel } : task,
-      ),
+      prev.map((task) => (task.id === id ? { ...task, label: newLabel } : task))
     );
   };
 
@@ -87,8 +85,8 @@ function App() {
   return (
     <section className="todoapp">
       <header className="header">
-        <h1> todos </h1> <NewTaskForm onTaskAdded={addTask} />{' '}
-      </header>
+        <h1> todos </h1> <NewTaskForm onTaskAdded={addTask} />
+      </header>{' '}
       <section className="main">
         <TaskList
           tasks={filteredTasks}

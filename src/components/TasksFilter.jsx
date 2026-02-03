@@ -1,5 +1,5 @@
-// src/components/TasksFilter.jsx
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function TasksFilter({ filter, onFilterChange }) {
   return (
@@ -31,5 +31,16 @@ function TasksFilter({ filter, onFilterChange }) {
     </ul>
   );
 }
+
+// Проверка типов (обязательно по заданию)
+TasksFilter.propTypes = {
+  filter: PropTypes.string,
+  onFilterChange: PropTypes.func.isRequired,
+};
+
+// Значение по умолчанию
+TasksFilter.defaultProps = {
+  filter: 'all',
+};
 
 export default TasksFilter;
